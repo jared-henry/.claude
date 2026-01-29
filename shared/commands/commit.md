@@ -1,4 +1,4 @@
-# /commit - Smart Commit Command
+# /commit - Smart Commit
 
 Generate a meaningful commit message based on staged changes.
 
@@ -13,11 +13,10 @@ Generate a meaningful commit message based on staged changes.
 
 1. Analyze staged changes with `git diff --staged`
 2. Generate a conventional commit message
-3. Create the commit with the generated message
+3. Create the commit
 
-## Commit Format
+## Format
 
-Follow conventional commits:
 - `feat:` New feature
 - `fix:` Bug fix
 - `docs:` Documentation

@@ -1,10 +1,6 @@
-# Code Review Prompt
+# Code Review
 
-Use this prompt when asking Claude to review code.
-
-## Review Checklist
-
-When reviewing code, check for:
+## Checklist
 
 1. **Correctness** - Does the code do what it's supposed to?
 2. **Security** - Are there any security vulnerabilities?

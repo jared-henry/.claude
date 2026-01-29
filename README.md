@@ -1,142 +1,61 @@
 # .claude
 
-Personal Claude Code configuration and dotfiles.
-
-## Overview
-
-This repository contains my Claude Code configurations, custom prompts, hooks, and templates. It's designed to be portable across machines and provides a consistent Claude Code experience.
+Multi-environment Claude Code configuration. Clone once, install anywhere.
 
 ## Structure
 
 ```
-~/.claude/
-├── settings/           # Claude Code settings
-│   └── settings.json   # Global settings (tracked)
-├── prompts/            # Custom system prompts
-│   ├── system.md       # Global system prompt
-│   ├── coding.md       # Coding standards
-│   └── review.md       # Code review guidelines
-├── hooks/              # Automation hooks
-│   ├── pre-commit.sh   # Runs before commits
-│   ├── post-session.sh # Runs after sessions
-│   └── pre-tool-use.sh # Runs before tool execution
-├── commands/           # Custom slash commands
-│   ├── commit.md       # Smart commit command
-│   ├── review.md       # Code review command
-│   └── explain.md      # Code explanation command
-├── templates/          # Reusable templates
-│   ├── CLAUDE.md       # Project CLAUDE.md template
-│   └── hooks/          # Git hook templates
-├── projects-config/    # Project-specific configs
-│   └── *.md            # Per-project instructions
-├── install.sh          # Bootstrap script
-└── README.md           # This file
+.claude/
+├── install.sh                  # Entry point (auto-detects or prompts)
+├── uninstall.sh                # Entry point
+├── sync.sh                     # Entry point (git pull + env-specific sync)
+├── shared/                     # Config shared across all environments
+│   ├── commands/               # Custom slash commands
+│   ├── hooks/                  # Automation hooks
+│   ├── prompts/                # System prompts & standards
+│   ├── settings/               # Base settings.json
+│   └── templates/              # Reusable templates (CLAUDE.md, git hooks)
+└── environments/               # Per-environment scripts
+    └── iphone/                 # iPhone 16 Pro Max (iSH / a-Shell)
+        ├── install.sh
+        ├── uninstall.sh
+        ├── sync.sh
+        └── README.md
 ```
 
-## Installation
-
-### Fresh Install
+## Quick Start
 
 ```bash
 git clone git@github.com:jared-henry/.claude.git ~/.claude
 cd ~/.claude
-./install.sh
+./install.sh                    # auto-detect environment
+./install.sh iphone             # or specify explicitly
 ```
 
-### Existing Claude Code Installation
+## Supported Environments
 
-If you already have Claude Code installed with runtime data in `~/.claude`:
+| Environment | Status | Notes |
+|-------------|--------|-------|
+| iPhone 16 Pro Max | Supported | via iSH or a-Shell |
 
-```bash
-cd ~/.claude
-git init
-git remote add origin git@github.com:jared-henry/.claude.git
-git fetch
-git checkout -b main --track origin/main
-```
+More environments will be added over time.
 
-## Usage
+## Commands
 
-### Custom Prompts
+| Command | Description |
+|---------|-------------|
+| `./install.sh [env]` | Install config for an environment |
+| `./uninstall.sh [env]` | Remove config for an environment |
+| `./sync.sh [env]` | Pull latest + apply env-specific sync |
+| `./install.sh --list` | List available environments |
 
-Prompts in `prompts/` can be referenced in your projects or loaded globally:
+## Adding a New Environment
 
-- `system.md` - Applied to all sessions
-- `coding.md` - Use for development tasks
-- `review.md` - Use for code reviews
-
-### Hooks
-
-Hooks in `hooks/` automate common tasks:
-
-| Hook | Trigger | Purpose |
-|------|---------|---------|
-| `pre-commit.sh` | Before commit | Validation, linting |
-| `post-session.sh` | Session end | Cleanup, logging |
-| `pre-tool-use.sh` | Before tools | Security, auditing |
-
-### Templates
-
-Copy templates to new projects:
-
-```bash
-cp ~/.claude/templates/CLAUDE.md ~/my-project/CLAUDE.md
-```
-
-### Project Configs
-
-Add project-specific instructions in `projects-config/`:
-
-```bash
-# Create config for a project
-touch ~/.claude/projects-config/my-project.md
-```
-
-## Customization
-
-### Adding a New Prompt
-
-1. Create a new `.md` file in `prompts/`
-2. Add your instructions in markdown format
-3. Reference it in your project's CLAUDE.md
-
-### Adding a New Hook
-
-1. Create a new `.sh` file in `hooks/`
-2. Make it executable: `chmod +x hooks/your-hook.sh`
-3. Exit 0 to allow, non-zero to block
-
-### Adding a New Command
-
-1. Create a new `.md` file in `commands/`
-2. Document usage and behavior
-3. Use with `/command-name` in Claude Code
-
-## Syncing
-
-Keep your configs in sync across machines:
-
-```bash
-# Pull latest changes
-cd ~/.claude && git pull
-
-# Push your changes
-cd ~/.claude && git add -A && git commit -m "Update configs" && git push
-```
+1. Create `environments/<name>/`
+2. Add `install.sh`, `uninstall.sh`, `sync.sh`
+3. Optionally add a `README.md` with env-specific docs
+4. Update detection logic in the top-level scripts if auto-detect is possible
 
 ## Files Not Tracked
 
-The following are automatically excluded (see `.gitignore`):
-
-- `settings.local.json` - Machine-specific settings
-- `debug/` - Debug logs
-- `plans/` - Session plans
-- `projects/` - Project session data
-- `session-env/` - Session environment
-- `shell-snapshots/` - Shell state
-- `statsig/` - Analytics
-- `todos/` - Todo state
-
-## License
-
-Personal configuration - use as inspiration for your own setup.
+See `.gitignore`. Runtime data, local settings, secrets, and session data are excluded.
