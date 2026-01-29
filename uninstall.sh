@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # =============================================================================
-# .claude Multi-Environment Installer
+# .claude Multi-Environment Uninstaller
 # =============================================================================
-# Routes to the correct environment-specific install script.
+# Routes to the correct environment-specific uninstall script.
 #
 # Usage:
-#   ./install.sh                    # Auto-detect environment
-#   ./install.sh <environment>      # Install for specific environment
-#   ./install.sh --list             # List available environments
-#   ./install.sh --help             # Show help
+#   ./uninstall.sh                    # Auto-detect environment
+#   ./uninstall.sh <environment>      # Uninstall for specific environment
+#   ./uninstall.sh --list             # List available environments
+#   ./uninstall.sh --help             # Show help
 # =============================================================================
 
 set -e
@@ -32,20 +32,18 @@ list_environments() {
     for dir in "$ENV_DIR"/*/; do
         [ -d "$dir" ] || continue
         env_name=$(basename "$dir")
-        if [ -f "$dir/install.sh" ]; then
+        if [ -f "$dir/uninstall.sh" ]; then
             echo "  - $env_name"
         fi
     done
 }
 
 detect_environment() {
-    # Check for iOS terminal apps (a-Shell, iSH)
     if [ -f "/proc/ish/version" ] || [[ "$(uname -a)" == *"iSH"* ]]; then
         echo "iphone"
         return
     fi
 
-    # a-Shell on iOS sets specific env vars
     if [ -n "$ASHELL" ] || [[ "$(uname -a)" == *"Darwin"* && "$(uname -m)" == "arm64" && -d "/private/var/mobile" ]]; then
         echo "iphone"
         return
@@ -55,7 +53,7 @@ detect_environment() {
 }
 
 show_help() {
-    echo "Usage: ./install.sh [OPTIONS] [ENVIRONMENT]"
+    echo "Usage: ./uninstall.sh [OPTIONS] [ENVIRONMENT]"
     echo ""
     echo "Options:"
     echo "  --list       List available environments"
@@ -63,13 +61,8 @@ show_help() {
     echo ""
     echo "Environments:"
     list_environments
-    echo ""
-    echo "Examples:"
-    echo "  ./install.sh              # Auto-detect"
-    echo "  ./install.sh iphone       # Install for iPhone"
 }
 
-# Parse arguments
 case "${1:-}" in
     --list|-l)
         list_environments
@@ -82,12 +75,11 @@ case "${1:-}" in
 esac
 
 echo ""
-echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║${NC}   .claude Multi-Environment Installer  ${BLUE}║${NC}"
-echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
+echo -e "${RED}╔════════════════════════════════════════╗${NC}"
+echo -e "${RED}║${NC}  .claude Multi-Environment Uninstaller ${RED}║${NC}"
+echo -e "${RED}╚════════════════════════════════════════╝${NC}"
 echo ""
 
-# Determine environment
 ENV_NAME="${1:-}"
 
 if [ -z "$ENV_NAME" ]; then
@@ -105,17 +97,15 @@ if [ -z "$ENV_NAME" ]; then
     fi
 fi
 
-# Validate environment
-ENV_SCRIPT="$ENV_DIR/$ENV_NAME/install.sh"
+ENV_SCRIPT="$ENV_DIR/$ENV_NAME/uninstall.sh"
 
 if [ ! -f "$ENV_SCRIPT" ]; then
-    error "No install script found for environment: $ENV_NAME"
+    error "No uninstall script found for environment: $ENV_NAME"
     echo ""
     list_environments
     exit 1
 fi
 
-# Run environment-specific installer
-info "Running $ENV_NAME installer..."
+info "Running $ENV_NAME uninstaller..."
 echo ""
 bash "$ENV_SCRIPT" "${@:2}"

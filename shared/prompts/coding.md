@@ -1,11 +1,9 @@
-# Coding Standards Prompt
-
-Use this prompt when you want Claude to follow specific coding standards.
+# Coding Standards
 
 ## General Principles
 
 - Write self-documenting code
-- Follow the DRY principle (Don't Repeat Yourself)
+- Follow DRY (Don't Repeat Yourself)
 - Favor readability over cleverness
 - Handle errors gracefully
 

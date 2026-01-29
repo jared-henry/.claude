@@ -1,7 +1,6 @@
 # Global System Prompt
 
-This file contains global instructions that apply to all Claude Code sessions.
-Edit this file to customize Claude's behavior across all your projects.
+Global instructions that apply to all Claude Code sessions regardless of environment.
 
 ## Preferences
 

@@ -1,4 +1,4 @@
-# /review - Code Review Command
+# /review - Code Review
 
 Perform a thorough code review of changes.
 
@@ -10,7 +10,7 @@ Perform a thorough code review of changes.
 /review --staged     # Review staged changes only
 ```
 
-## Review Criteria
+## Criteria
 
 - Security vulnerabilities
 - Performance issues

@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # =============================================================================
-# .claude Multi-Environment Installer
+# .claude Multi-Environment Sync
 # =============================================================================
-# Routes to the correct environment-specific install script.
+# Routes to the correct environment-specific sync script.
+# Sync pulls latest config from the repo and applies it to the local env.
 #
 # Usage:
-#   ./install.sh                    # Auto-detect environment
-#   ./install.sh <environment>      # Install for specific environment
-#   ./install.sh --list             # List available environments
-#   ./install.sh --help             # Show help
+#   ./sync.sh                    # Auto-detect environment
+#   ./sync.sh <environment>      # Sync for specific environment
+#   ./sync.sh --list             # List available environments
+#   ./sync.sh --help             # Show help
 # =============================================================================
 
 set -e
@@ -32,20 +33,18 @@ list_environments() {
     for dir in "$ENV_DIR"/*/; do
         [ -d "$dir" ] || continue
         env_name=$(basename "$dir")
-        if [ -f "$dir/install.sh" ]; then
+        if [ -f "$dir/sync.sh" ]; then
             echo "  - $env_name"
         fi
     done
 }
 
 detect_environment() {
-    # Check for iOS terminal apps (a-Shell, iSH)
     if [ -f "/proc/ish/version" ] || [[ "$(uname -a)" == *"iSH"* ]]; then
         echo "iphone"
         return
     fi
 
-    # a-Shell on iOS sets specific env vars
     if [ -n "$ASHELL" ] || [[ "$(uname -a)" == *"Darwin"* && "$(uname -m)" == "arm64" && -d "/private/var/mobile" ]]; then
         echo "iphone"
         return
@@ -55,7 +54,7 @@ detect_environment() {
 }
 
 show_help() {
-    echo "Usage: ./install.sh [OPTIONS] [ENVIRONMENT]"
+    echo "Usage: ./sync.sh [OPTIONS] [ENVIRONMENT]"
     echo ""
     echo "Options:"
     echo "  --list       List available environments"
@@ -63,13 +62,8 @@ show_help() {
     echo ""
     echo "Environments:"
     list_environments
-    echo ""
-    echo "Examples:"
-    echo "  ./install.sh              # Auto-detect"
-    echo "  ./install.sh iphone       # Install for iPhone"
 }
 
-# Parse arguments
 case "${1:-}" in
     --list|-l)
         list_environments
@@ -82,12 +76,21 @@ case "${1:-}" in
 esac
 
 echo ""
-echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║${NC}   .claude Multi-Environment Installer  ${BLUE}║${NC}"
-echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
+echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║${NC}     .claude Multi-Environment Sync    ${GREEN}║${NC}"
+echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
 echo ""
 
-# Determine environment
+# Pull latest from remote first
+info "Pulling latest from remote..."
+cd "$SCRIPT_DIR"
+if git pull --ff-only 2>/dev/null; then
+    success "Repo up to date"
+else
+    warn "Could not fast-forward. Resolve manually if needed."
+fi
+echo ""
+
 ENV_NAME="${1:-}"
 
 if [ -z "$ENV_NAME" ]; then
@@ -105,17 +108,15 @@ if [ -z "$ENV_NAME" ]; then
     fi
 fi
 
-# Validate environment
-ENV_SCRIPT="$ENV_DIR/$ENV_NAME/install.sh"
+ENV_SCRIPT="$ENV_DIR/$ENV_NAME/sync.sh"
 
 if [ ! -f "$ENV_SCRIPT" ]; then
-    error "No install script found for environment: $ENV_NAME"
+    error "No sync script found for environment: $ENV_NAME"
     echo ""
     list_environments
     exit 1
 fi
 
-# Run environment-specific installer
-info "Running $ENV_NAME installer..."
+info "Running $ENV_NAME sync..."
 echo ""
 bash "$ENV_SCRIPT" "${@:2}"
